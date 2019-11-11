@@ -18,12 +18,9 @@ variable "key_name" {
     default = "OpsSchool"
 }
 
-variable "private_key_path" {
-    default = "C:\\Users\\dstefansky\\Documents\\OpsSchool\\Class1\\OpsSchool.pem"
-}
 
 variable "index_path" {
-    default = "C:\\Users\\dstefansky\\Documents\\OpsSchool\\Class1\\Index.html"
+    default = "Index.html"
 }
 #####################################
 # providors
