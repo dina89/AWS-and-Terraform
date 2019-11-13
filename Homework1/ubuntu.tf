@@ -106,6 +106,11 @@ resource "aws_instance" "OpsSchool" {
       private_key = tls_private_key.class1_key.private_key_pem
   }
 
+  provisioner "file" {
+    source      = var.index_path
+    destination = "/tmp/index.html"
+  }
+  
   provisioner "remote-exec"{
       inline = [
           "sudo apt-get -y update",
@@ -113,11 +118,6 @@ resource "aws_instance" "OpsSchool" {
           "sudo service nginx start",
           "sudo mv -f /tmp/index.html /var/www/html/"
       ]
-  }
-
-  provisioner "file" {
-    source      = var.index_path
-    destination = "/tmp/index.html"
   }
 
     tags = {
