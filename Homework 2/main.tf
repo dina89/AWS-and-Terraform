@@ -114,8 +114,6 @@ resource "aws_instance" "private_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
-  associate_public_ip_address = true
-
   subnet_id = "${element(aws_subnet.private.*.id, count.index)}"
   key_name               = aws_key_pair.ansible_key.key_name
 
