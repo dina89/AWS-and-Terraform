@@ -11,7 +11,7 @@ variable "aws_region" {
 }
 variable "availability_zones" {
   description = "AZs in this region to use"
-  default = ["eu-west-1a", "eu-west-1c"]
+  default = ["us-east-1a", "us-east-1c"]
   type = "list"
 }
 variable "instanceTenancy" {
