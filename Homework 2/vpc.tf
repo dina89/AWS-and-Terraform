@@ -29,6 +29,7 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_route_table" "private_route_table" {
+    count = 2
     vpc_id = aws_vpc.My_VPC.id
 }
 
@@ -39,13 +40,14 @@ resource "aws_internet_gateway" "My_VPC_GW" {
 
 #create the elasticIP
 resource "aws_eip" "nat" {
+  count = 2
   vpc      = true
 }
 
 # Create the NAT Gateways
 resource "aws_nat_gateway" "My_NAT_GW" {
   count = 2
-  allocation_id = "${aws_eip.nat.id}"
+  allocation_id = "${element(aws_eip.nat.*.id, count.index)}"
   subnet_id     = "${element(aws_subnet.public.*.id, count.index)}"
 
   depends_on = [aws_internet_gateway.My_VPC_GW]
@@ -61,13 +63,22 @@ resource "aws_route" "My_VPC_internet_access" {
   route_table_id        = "${aws_route_table.public_route_table.id}"
   destination_cidr_block = "${var.destinationCIDRblock}"
   gateway_id             = "${aws_internet_gateway.My_VPC_GW.id}"
+
 }
 
 resource "aws_route" "My_VPC_NAT_access" {
-  count = 2
-  route_table_id        = "${element(aws_route_table.private_route_table.*.id, count.index)}"
+
+  route_table_id        = "${aws_route_table.private_route_table.0.id}"
   destination_cidr_block = "${var.destinationCIDRblock}"
-  nat_gateway_id             = "${element(aws_nat_gateway.My_NAT_GW.*.id, count.index)}"
+  nat_gateway_id             = "${aws_nat_gateway.My_NAT_GW.0.id}"
+
+}
+
+resource "aws_route" "My_VPC_NAT_access2" {
+  route_table_id        = "${aws_route_table.private_route_table.1.id}"
+  destination_cidr_block = "${var.destinationCIDRblock}"
+  nat_gateway_id             = "${aws_nat_gateway.My_NAT_GW.1.id}"
+
 }
 
 

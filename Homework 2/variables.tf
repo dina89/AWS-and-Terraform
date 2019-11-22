@@ -33,7 +33,7 @@ variable "subnet_cidrs_public" {
 }
 variable "subnet_cidrs_private" {
   description = "Subnet CIDRs for private subnets (length must match configured availability_zones)"
-  default = ["10.0.0.1/24", "10.0.0.2/24"]
+  default = ["10.0.1.0/24", "10.0.2.0/24"]
   type = "list"
 }
 variable "destinationCIDRblock" {
