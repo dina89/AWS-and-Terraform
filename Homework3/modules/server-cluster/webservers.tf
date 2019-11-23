@@ -2,30 +2,15 @@
 # resources
 ####################################
 
-#Create an 2 extra disks "disk2"
-resource "aws_ebs_volume" "disk2" {
-  count             = 2
-  availability_zone = var.aws_availability_zone
-  size              = 10
-  encrypted         = true
-  type              = "gp2"
-}
-
-#Create an disk attachment to the instances
-resource "aws_volume_attachment" "ebs_att" {
-  count       = 2
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.disk2[count.index].id
-  instance_id = aws_instance.OpsSchool[count.index].id
-}
-
-#Create the instances "OpsSchool"
-resource "aws_instance" "OpsSchool" {
-  count                  = 2
+#Create the instances "public_server"
+resource "aws_instance" "public_server" {
+  count = 2
   ami                    = "ami-024582e76075564db"
   instance_type          = "t2.medium"
+  #availability_zone = element(var.aws_availability_zone, count.index)
   key_name               = var.key_name
-  vpc_security_group_ids = [var.vpc_security_group_ids]
+  vpc_security_group_ids = var.vpc_security_group_ids
+  subnet_id = element(var.public_subnet_id, count.index)
   associate_public_ip_address = true
   connection {
       type = "ssh"
@@ -44,17 +29,43 @@ resource "aws_instance" "OpsSchool" {
           "sudo apt-get -y update",
           "sudo apt-get -y install nginx",
           "sudo service nginx start",
+          #"sudo sed -i 's/hostname/$(cat /etc/hostname)/' /tmp/index.html",
           "sudo mv -f /tmp/index.html /var/www/html/"
       ]
   }
 
     tags = {
     Owner = "Dina Stefansky"
-    Name = "OpsSchool Server [count.index]"
+    Name = "public Server[count.index]"
     Purpose = "Learning"
   }
 }
 
+resource "aws_instance" "private_server" {
+  count = 2
+  ami                    = "ami-024582e76075564db"
+  instance_type          = "t2.medium"
+  #availability_zone = element(var.aws_availability_zone, count.index)
+  key_name               = var.key_name
+  subnet_id = element(var.private_subnet_id, count.index)
+
+  tags = {
+    Name = "private Server[count.index]"
+  }
+}
+
 output "aws_instance_public_dns" {
-       value = aws_instance.OpsSchool.*.public_ip
+       value = aws_instance.public_server.*.public_ip
+}
+
+output "aws_instance_private_dns" {
+       value = aws_instance.private_server.*.public_ip
+}
+
+output "aws_instance_public_id" {
+       value = aws_instance.public_server.*.id
+}
+
+output "aws_instance_private_id" {
+       value = aws_instance.public_server.*.id
 }

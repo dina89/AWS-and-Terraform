@@ -15,12 +15,22 @@ variable "private_key" {
 
 variable "vpc_security_group_ids" {
   description = "The vpc security group id's"
-  type        = string
+  type        = list(string)
 }
 
-variable "aws_availability_zone" {
-  description = "availability zone"
-  type        = string
+# variable "aws_availability_zone" {
+#   description = "availability zone"
+#   type        = list(string)
+# }
+
+variable "public_subnet_id" {
+  description = "the subnet id"
+  type        = list(string)
+}
+
+variable "private_subnet_id" {
+  description = "the subnet id"
+  type        = list(string)
 }
 
 variable "index_path" {
