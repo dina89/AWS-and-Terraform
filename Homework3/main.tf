@@ -20,6 +20,11 @@ resource "aws_key_pair" "generated_key"{
   public_key = tls_private_key.class1_key.public_key_openssh
 }
 
+resource "local_file" "ansible_key" {
+  sensitive_content  = tls_private_key.class1_key.private_key_pem
+  filename           = "ansible.pem"
+}
+
 
 ####################################
 # vpc
@@ -65,6 +70,7 @@ module "server-cluster" {
   index_path = var.index_path
   public_subnet_id = module.vpc.public_subnet_id
   private_subnet_id = module.vpc.private_subnet_id
+  iam_instance_profile = aws_iam_instance_profile.s3_profile.name
 
 }
 
@@ -81,3 +87,9 @@ module "LB" {
   vpc_id = module.vpc.vpc_id
   server_id = module.server-cluster.aws_instance_public_id
 }
+
+# resource "aws_s3_bucket_object" "nginx-access-log" {
+#   bucket = "opsschool-dina-state-storage-s3"
+#   key    = "nginx-access-log"
+#   source = "ubuntu.tf"
+# }

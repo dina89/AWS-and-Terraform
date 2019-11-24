@@ -37,3 +37,8 @@ variable "index_path" {
   description = "path to index.html"
   type        = string
 }
+
+variable "iam_instance_profile" {
+  description = "profile to access s3"
+  type        = string
+}

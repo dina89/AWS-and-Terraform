@@ -11,6 +11,7 @@ resource "aws_instance" "public_server" {
   key_name               = var.key_name
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id = element(var.public_subnet_id, count.index)
+  iam_instance_profile = var.iam_instance_profile
   associate_public_ip_address = true
   connection {
       type = "ssh"
@@ -29,7 +30,7 @@ resource "aws_instance" "public_server" {
           "sudo apt-get -y update",
           "sudo apt-get -y install nginx",
           "sudo service nginx start",
-          #"sudo sed -i 's/hostname/$(cat /etc/hostname)/' /tmp/index.html",
+          "sudo cat /etc/hostname >> /tmp/index.html",
           "sudo mv -f /tmp/index.html /var/www/html/"
       ]
   }
