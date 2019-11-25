@@ -24,6 +24,11 @@ resource "aws_instance" "public_server" {
     source      = var.index_path
     destination = "/tmp/index.html"
   }
+
+    provisioner "file" {
+    source      = "log2s3.sh"
+    destination = "/tmp/log2s3.sh"
+  }
   
   provisioner "remote-exec"{
       inline = [
@@ -31,7 +36,12 @@ resource "aws_instance" "public_server" {
           "sudo apt-get -y install nginx",
           "sudo service nginx start",
           "sudo cat /etc/hostname >> /tmp/index.html",
-          "sudo mv -f /tmp/index.html /var/www/html/"
+          "sudo mv -f /tmp/index.html /var/www/html/",
+          "sudo apt-get install unzip",
+          "curl 'https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip'",
+          "unzip awscliv2.zip",
+          "sudo ./aws/install",
+          "sudo echo \"$(echo \"5 * * * * /tmp/log2s3.sh\" ; crontab -l)\" | crontab -"
       ]
   }
 
