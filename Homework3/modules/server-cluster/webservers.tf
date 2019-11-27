@@ -41,7 +41,8 @@ resource "aws_instance" "public_server" {
           "curl 'https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip'",
           "unzip awscliv2.zip",
           "sudo ./aws/install",
-          "sudo echo \"$(echo \"5 * * * * /tmp/log2s3.sh\" ; crontab -l)\" | crontab -"
+          "chmod +x /tmp/log2s3.sh",
+          "sudo echo \"$(echo \"30 * * * * /tmp/log2s3.sh >> /tmp/log2s3.log 2>&1 \" ; crontab -l)\" | crontab -"
       ]
   }
 
